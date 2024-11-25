@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Item {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
@@ -22,7 +22,7 @@ public class Item {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private int price;
 
     public Item(String name, int price) {
