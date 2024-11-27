@@ -62,6 +62,7 @@ public class RedisConfig {
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://" + host + ":" + port);
+        config.useSingleServer().setPassword(password);
         return Redisson.create(config);
     }
 

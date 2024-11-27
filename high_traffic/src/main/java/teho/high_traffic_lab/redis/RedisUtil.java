@@ -15,6 +15,10 @@ public class RedisUtil {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    public void setValue(String key, String value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
     public Long incrementValue(String key) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.increment(key, 1);// key에 해당하는 값 증가
