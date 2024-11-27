@@ -2,24 +2,27 @@ package teho.high_traffic_lab.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import teho.high_traffic_lab.kafka.KafkaProducer;
+import org.springframework.transaction.annotation.Transactional;
+import teho.high_traffic_lab.entity.Coupon;
 import teho.high_traffic_lab.redis.RedisUtil;
+import teho.high_traffic_lab.repository.CouponRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class CouponService {
-    private final KafkaProducer kafkaProducer;
     private final RedisUtil redisUtil;
+    private final CouponRepository couponRepository;
 
-    public String issueCoupon(Long userId) {
-        Long couponCount = redisUtil.decrementValue("COUPON_COUNT");
-        System.out.println("잔여 쿠폰 수 = " + couponCount);
-        if (couponCount < 0) {
-            return "쿠폰 발급이 끝났어요~!";
+    @Transactional
+    public void setCouponUserId(Long userId, Long couponId) {
+        Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new RuntimeException("Id와 맞는 쿠폰이 없습니다."));
+        if (coupon.getUserId() != null) {
+            throw new RuntimeException("이미 발급된 쿠폰 입니다!!!");
         }
-
-        kafkaProducer.send("issue-coupon", String.valueOf(userId));
-        return "쿠폰 발급이 성공했어요~! 쿠폰함을 확인해주세요.";
+        coupon.setUserId(userId);
+        coupon.setIssuedDate(LocalDateTime.now());
     }
 
 }

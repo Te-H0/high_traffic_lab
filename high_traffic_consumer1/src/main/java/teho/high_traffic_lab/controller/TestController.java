@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import teho.high_traffic_lab.kafka.KafkaProducer;
+import teho.high_traffic_lab.service.CouponService;
 import teho.high_traffic_lab.service.UserService;
 //import teho.high_traffic_lab.dto.UserDto;
 
@@ -13,6 +14,7 @@ import teho.high_traffic_lab.service.UserService;
 public class TestController {
     private final UserService userService;
     private final KafkaProducer kafkaProducer;
+    private final CouponService couponService;
 
     @GetMapping("/init")
     public String test(@RequestParam int user, @RequestParam int item) {
