@@ -1,8 +1,10 @@
 package teho.high_traffic_lab.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import teho.high_traffic_lab.entity.Gender;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import teho.high_traffic_lab.kafka.KafkaProducer;
 import teho.high_traffic_lab.service.UserService;
 //import teho.high_traffic_lab.dto.UserDto;
 
@@ -10,6 +12,7 @@ import teho.high_traffic_lab.service.UserService;
 @RequiredArgsConstructor
 public class TestController {
     private final UserService userService;
+    private final KafkaProducer kafkaProducer;
 
     @GetMapping("/init")
     public String test(@RequestParam int user, @RequestParam int item) {
@@ -25,9 +28,9 @@ public class TestController {
         return "yes~";
     }
 
-    @PostMapping("/enum")
-    public Gender test2(@RequestBody Gender gender) {
-        System.out.println("gender = " + gender);
-        return gender;
+    @GetMapping("/kafka")
+    public String test2(@RequestParam String value) {
+        kafkaProducer.send("topic", value);
+        return "성공~";
     }
 }
