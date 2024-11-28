@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+spring:
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:mariadb://localhost:3308/high_traffic?rewriteBatchedStatements=true&profileSQL=true&maxQuerySizeToLog=0
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: root
+      database: 1
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: false
+      defer-datasource-initialization: true
+
+
+logging:
+  level:
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql: off
+#logging:
+#  level:
+#    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#      cache:
+#        use_second_level_cache: false
+#        use_query_cache: false
