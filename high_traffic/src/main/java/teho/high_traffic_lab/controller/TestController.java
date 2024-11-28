@@ -1,7 +1,6 @@
 package teho.high_traffic_lab.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,15 +45,9 @@ public class TestController {
         return (100 - remainingCouponCount) + "번째로 쿠폰 신청 성공 ~!";
     }
 
-    @GetMapping("/coupon/create")
+    @GetMapping("/coupon/init")
     public String createCoupon(@RequestParam int size) {
-        couponService.createCoupons(size);
+        couponService.initCoupons(size);
         return size + "개 쿠폰 rdbms에 저장";
-    }
-
-    @DeleteMapping("/coupon")
-    public String deleteCoupon() {
-        couponService.deleteCoupons();
-        return "쿠폰 전체 삭제 성공";
     }
 }

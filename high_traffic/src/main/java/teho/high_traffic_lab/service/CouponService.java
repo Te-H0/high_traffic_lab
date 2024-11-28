@@ -2,7 +2,6 @@ package teho.high_traffic_lab.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -50,23 +49,30 @@ public class CouponService {
         }
     }
 
-    @PostConstruct
-    public void initCoupon() {
-        redisUtil.setValue("COUPON", String.valueOf(COUPON_COUNT));
-        String coupon = redisUtil.getValue("COUPON");
-        System.out.println("init된 coupon 수 = " + coupon);
-    }
-
     public void createCoupons(int size) {
         for (int i = 0; i < size; i++) {
             Coupon coupon = new Coupon();
             couponRepository.save(coupon);
         }
+        System.out.println("mariaDb에 init된 coupon 수 = " + size);
     }
 
     @Transactional
-    public void deleteCoupons() {
+    public void initCoupons(int size) {
+        // 데이터베이스 초기화
         entityManager.createNativeQuery("TRUNCATE TABLE coupons").executeUpdate();
         System.out.println("Coupons 테이블이 초기화되었습니다.");
+
+        // 데이터베이스에 쿠폰 init
+        createCoupons(size);
+
+        // redis 초기화
+        redisUtil.deleteData("COUPON");
+
+        // redis에 쿠폰 size init
+        redisUtil.setValue("COUPON", String.valueOf(size));
+        String coupon = redisUtil.getValue("COUPON");
+        System.out.println("redis에 init된 coupon 수 = " + coupon);
+
     }
 }
