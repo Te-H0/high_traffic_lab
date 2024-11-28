@@ -3,7 +3,6 @@ package teho.high_traffic_lab.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import teho.high_traffic_lab.entity.Item;
 import teho.high_traffic_lab.entity.User;
 import teho.high_traffic_lab.repository.BulkRepository;
 import teho.high_traffic_lab.repository.ItemRepository;
@@ -45,23 +44,23 @@ public class UserService {
         bulkRepository.saveAllUsers(users);
     }
 
-    public void createItem(int count) {
-        List<Item> items = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 1; i <= count; i++) {
-            int price = (random.nextInt(100000) + 1000) / 100 * 100;
-            items.add(new Item("item" + i, price));
-        }
-        itemRepository.saveAll(items);
-    }
-
-    public void createItem2(int count) {
-        List<Item> items = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 1; i <= count; i++) {
-            int price = (random.nextInt(100000) + 1000) / 100 * 100;
-            items.add(new Item("item" + i, price));
-        }
-        bulkRepository.saveAllItems(items);
-    }
+//    public void createItem(int count) {
+//        List<Item> items = new ArrayList<>();
+//        Random random = new Random();
+//        for (int i = 1; i <= count; i++) {
+//            int price = (random.nextInt(100000) + 1000) / 100 * 100;
+//            items.add(new Item("item" + i, price));
+//        }
+//        itemRepository.saveAll(items);
+//    }
+//
+//    public void createItem2(int count) {
+//        List<Item> items = new ArrayList<>();
+//        Random random = new Random();
+//        for (int i = 1; i <= count; i++) {
+//            int price = (random.nextInt(100000) + 1000) / 100 * 100;
+//            items.add(new Item("item" + i, price));
+//        }
+//        bulkRepository.saveAllItems(items);
+//    }
 }

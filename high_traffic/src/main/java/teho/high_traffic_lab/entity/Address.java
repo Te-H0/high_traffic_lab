@@ -3,15 +3,11 @@ package teho.high_traffic_lab.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "orders")
 @NoArgsConstructor
-public class Order {
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -19,10 +15,16 @@ public class Order {
     @Column(nullable = false)
     private long userId;
 
-    @CreatedDate
-    private LocalDateTime orderDate;
+    private String street;
 
-    public Order(long userId) {
+    private String city;
+
+    private String zipcode;
+
+    public Address(long userId, String street, String city, String zipcode) {
         this.userId = userId;
+        this.street = street;
+        this.city = city;
+        this.zipcode = zipcode;
     }
 }

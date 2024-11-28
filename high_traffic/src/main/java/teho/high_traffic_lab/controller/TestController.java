@@ -5,28 +5,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import teho.high_traffic_lab.kafka.KafkaProducer;
+import teho.high_traffic_lab.service.CommonService;
 import teho.high_traffic_lab.service.CouponService;
-import teho.high_traffic_lab.service.UserService;
 //import teho.high_traffic_lab.dto.UserDto;
 
 @RestController
 @RequiredArgsConstructor
 public class TestController {
-    private final UserService userService;
+
     private final KafkaProducer kafkaProducer;
     private final CouponService couponService;
+    private final CommonService commonService;
 
     @GetMapping("/init")
-    public String test(@RequestParam int user, @RequestParam int item) {
-        userService.createUser(user);
-        userService.createItem(item);
-        return "yes~";
-    }
-
-    @GetMapping("/init2")
-    public String test2(@RequestParam int user, @RequestParam int item) {
-        userService.createUser2(user);
-        userService.createItem2(item);
+    public String test(@RequestParam int user, @RequestParam int item, @RequestParam int order) {
+        commonService.initProject(user, item, order);
         return "yes~";
     }
 
