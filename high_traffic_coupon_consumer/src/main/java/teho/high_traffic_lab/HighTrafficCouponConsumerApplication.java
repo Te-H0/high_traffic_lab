@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HighTrafficConsumer1Application {
+public class HighTrafficCouponConsumerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(HighTrafficConsumer1Application.class, args);
+        SpringApplication.run(HighTrafficCouponConsumerApplication.class, args);
     }
 
 }

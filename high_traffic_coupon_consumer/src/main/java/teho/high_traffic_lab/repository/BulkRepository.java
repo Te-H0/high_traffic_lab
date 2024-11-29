@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import teho.high_traffic_lab.entity.Item;
 import teho.high_traffic_lab.entity.User;
 
 import java.sql.PreparedStatement;
@@ -28,21 +27,6 @@ public class BulkRepository {
                     ps.setString(1, user.getName());
                     ps.setInt(2, user.getAge());
                     ps.setInt(3, user.getLevel());
-                }
-        );
-    }
-
-    @Transactional
-    public void saveAllItems(List<Item> items) {
-        String sql = "INSERT INTO items (name, price)" +
-                "VALUES (?, ?)";
-
-        jdbcTemplate.batchUpdate(sql,
-                items,
-                items.size(),
-                (PreparedStatement ps, Item item) -> {
-                    ps.setString(1, item.getName());
-                    ps.setInt(2, item.getPrice());
                 }
         );
     }
