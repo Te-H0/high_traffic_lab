@@ -55,7 +55,7 @@ public class CommonService {
             String name = "user" + i;
             int age = random.nextInt(70) + 10;
             int level = random.nextInt(5) + 1;
-            users.add(new User(name, age, level));
+            users.add(new User(i, name, age, level));
         }
         bulkRepository.saveAllUsers(users);
         USER_SIZE = userCount;
@@ -72,7 +72,7 @@ public class CommonService {
             int streetNum = random.nextInt(100) + 1;
             int zipNum = random.nextInt(8000) + 1000;
             String city = CITY_LIST[idx];
-            addresses.add(new Address(i, String.valueOf(streetNum), city, String.valueOf(zipNum)));
+            addresses.add(new Address(i, USER_SIZE - (i - 1), String.valueOf(streetNum), city, String.valueOf(zipNum)));
         }
         bulkRepository.saveAllAddress(addresses);
     }
@@ -80,8 +80,8 @@ public class CommonService {
     // 카테고리 무조건 6개
     private void initCategory() {
         entityManager.createNativeQuery("TRUNCATE TABLE category").executeUpdate();
-        for (String category : CATEGORY_LIST) {
-            categoryRepository.save(new Category(category));
+        for (int i = 1; i <= CATEGORY_SIZE; i++) {
+            categoryRepository.save(new Category(i, CATEGORY_LIST[i - 1]));
         }
     }
 
@@ -93,7 +93,7 @@ public class CommonService {
             long categoryId = random.nextLong(CATEGORY_SIZE) + 1;
             String name = "item" + i;
             int price = (random.nextInt(100000) + 1000) / 100 * 100;
-            items.add(new Item(categoryId, name, price));
+            items.add(new Item(i, categoryId, name, price));
         }
         bulkRepository.saveAllItems(items);
         ITEM_SIZE = itemCount;
@@ -105,6 +105,7 @@ public class CommonService {
         List<Order> orders = new ArrayList<>();
         List<OrderItem> orderItems = new ArrayList<>();
 
+        int orderItemId = 1;
         Random random = new Random();
         for (int i = 1; i <= orderCount; i++) {
             if (i == BATCH_SIZE + 1) {
@@ -118,7 +119,7 @@ public class CommonService {
             }
             int sameOrderCount = random.nextInt(3) + 1;
             long userId = random.nextLong(USER_SIZE) + 1;
-            orders.add(new Order(userId, LocalDateTime.now()));
+            orders.add(new Order(i, userId, LocalDateTime.now()));
 
             Set<Long> itemIds = new HashSet<>();
             for (int j = 0; j < sameOrderCount; j++) {
@@ -132,7 +133,7 @@ public class CommonService {
                 }
 
                 int quantity = random.nextInt(5) + 1;
-                orderItems.add(initOderItem(i, itemId, quantity));
+                orderItems.add(initOderItem(orderItemId++, i, itemId, quantity));
             }
         }
         if (!orders.isEmpty()) {
@@ -145,8 +146,8 @@ public class CommonService {
         ORDER_SIZE = orderCount;
     }
 
-    private OrderItem initOderItem(int orderId, long itemId, int quantity) {
-        return new OrderItem(orderId, itemId, quantity);
+    private OrderItem initOderItem(int orderItemId, int orderId, long itemId, int quantity) {
+        return new OrderItem(orderItemId, orderId, itemId, quantity);
     }
 
     private void initPayment() {
@@ -162,7 +163,7 @@ public class CommonService {
                 int randomMinutes = random.nextInt(181);  // 0 ~ 180분
                 paymentDate = LocalDateTime.now().plusMinutes(randomMinutes);
             }
-            payments.add(new Payment((long) i, status, paymentDate));
+            payments.add(new Payment(i, ORDER_SIZE - (i - 1), status, paymentDate));
         }
         bulkRepository.saveAllPayments(payments);
     }

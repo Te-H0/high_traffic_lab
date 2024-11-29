@@ -1,6 +1,10 @@
 package teho.high_traffic_lab.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,9 +12,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "order_items")
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)
@@ -22,10 +26,4 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
-
-    public OrderItem(long orderId, long itemId, int quantity) {
-        this.orderId = orderId;
-        this.itemId = itemId;
-        this.quantity = quantity;
-    }
 }

@@ -27,7 +27,7 @@ public class UserService {
             String name = "user" + i;
             int age = random.nextInt(70) + 10;
             int level = random.nextInt(5) + 1;
-            users.add(new User(name, age, level));
+            users.add(new User(i, name, age, level));
         }
         userRepository.saveAll(users);
     }
@@ -39,7 +39,7 @@ public class UserService {
             String name = "user" + i;
             int age = random.nextInt(70) + 10;
             int level = random.nextInt(5) + 1;
-            users.add(new User(name, age, level));
+            users.add(new User(i, name, age, level));
         }
         bulkRepository.saveAllUsers(users);
     }

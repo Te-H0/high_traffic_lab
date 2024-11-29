@@ -1,15 +1,18 @@
 package teho.high_traffic_lab.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Address {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)
@@ -21,10 +24,5 @@ public class Address {
 
     private String zipcode;
 
-    public Address(long userId, String street, String city, String zipcode) {
-        this.userId = userId;
-        this.street = street;
-        this.city = city;
-        this.zipcode = zipcode;
-    }
+
 }
