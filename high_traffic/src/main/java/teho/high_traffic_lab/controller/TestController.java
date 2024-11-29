@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import teho.high_traffic_lab.dto.OrderDetailResponse;
 import teho.high_traffic_lab.kafka.KafkaProducer;
 import teho.high_traffic_lab.service.CommonService;
 import teho.high_traffic_lab.service.CouponService;
+import teho.high_traffic_lab.service.OrderService;
 //import teho.high_traffic_lab.dto.UserDto;
 
 @RestController
@@ -16,6 +18,7 @@ public class TestController {
     private final KafkaProducer kafkaProducer;
     private final CouponService couponService;
     private final CommonService commonService;
+    private final OrderService orderService;
 
     @GetMapping("/init")
     public String test(@RequestParam int user, @RequestParam int item, @RequestParam int order) {
@@ -43,4 +46,10 @@ public class TestController {
         couponService.initCoupons(size);
         return size + "개 쿠폰 rdbms에 저장";
     }
+
+    @GetMapping("orders/detail")
+    public OrderDetailResponse orderDetail(@RequestParam Long orderId) {
+        return orderService.getOrderDetailByOrderId(orderId);
+    }
+
 }

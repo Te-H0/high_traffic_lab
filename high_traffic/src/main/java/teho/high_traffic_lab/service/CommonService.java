@@ -13,9 +13,7 @@ import teho.high_traffic_lab.repository.ItemRepository;
 import teho.high_traffic_lab.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -29,6 +27,7 @@ public class CommonService {
     private static int ITEM_SIZE = 0;
     private static int USER_SIZE = 0;
     private static int ORDER_SIZE = 0;
+    private final int BATCH_SIZE = 500000;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final BulkRepository bulkRepository;
@@ -108,14 +107,41 @@ public class CommonService {
 
         Random random = new Random();
         for (int i = 1; i <= orderCount; i++) {
+            if (i == BATCH_SIZE + 1) {
+                bulkRepository.saveAllOrders(orders);
+                orders.clear();
+            }
+
+            if (orderItems.size() > BATCH_SIZE) {
+                bulkRepository.saveAllOrderItems(orderItems);
+                orderItems.clear();
+            }
+            int sameOrderCount = random.nextInt(3) + 1;
             long userId = random.nextLong(USER_SIZE) + 1;
-            long itemId = random.nextLong(ITEM_SIZE) + 1;
-            int quantity = random.nextInt(5) + 1;
-            orders.add(new Order(userId));
-            orderItems.add(initOderItem(i, itemId, quantity));
+            orders.add(new Order(userId, LocalDateTime.now()));
+
+            Set<Long> itemIds = new HashSet<>();
+            for (int j = 0; j < sameOrderCount; j++) {
+                long itemId = -1;
+                while (true) {
+                    itemId = random.nextLong(ITEM_SIZE) + 1;
+                    if (!itemIds.contains(itemId)) {
+                        itemIds.add(itemId);
+                        break;
+                    }
+                }
+
+                int quantity = random.nextInt(5) + 1;
+                orderItems.add(initOderItem(i, itemId, quantity));
+            }
         }
-        bulkRepository.saveAllOrders(orders);
-        bulkRepository.saveAllOrderItems(orderItems);
+        if (!orders.isEmpty()) {
+            bulkRepository.saveAllOrders(orders);
+        }
+        if (!orderItems.isEmpty()) {
+            bulkRepository.saveAllOrderItems(orderItems);
+        }
+
         ORDER_SIZE = orderCount;
     }
 

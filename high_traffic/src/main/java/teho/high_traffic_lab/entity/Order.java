@@ -3,7 +3,6 @@ package teho.high_traffic_lab.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -19,10 +18,10 @@ public class Order {
     @Column(nullable = false)
     private long userId;
 
-    @CreatedDate
     private LocalDateTime orderDate;
 
-    public Order(long userId) {
+    public Order(long userId, LocalDateTime orderDate) {
         this.userId = userId;
+        this.orderDate = orderDate;
     }
 }
