@@ -1,8 +1,8 @@
 package teho.high_traffic_lab.repository;
 
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import teho.high_traffic_lab.dto.ItemInfoDto;
 import teho.high_traffic_lab.entity.Item;
