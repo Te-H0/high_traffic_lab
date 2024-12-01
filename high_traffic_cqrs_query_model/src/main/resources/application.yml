@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+spring:
+  profiles:
+    active: local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: high_traffic_lab
+      username: root
+      password: root
+  
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: false
+      defer-datasource-initialization: true
+
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#      cache:
+#        use_second_level_cache: false
+#        use_query_cache: false
