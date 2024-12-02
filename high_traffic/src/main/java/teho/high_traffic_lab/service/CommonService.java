@@ -1,16 +1,19 @@
 package teho.high_traffic_lab.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import teho.high_traffic_lab.dto.OrderDetailResponse;
 import teho.high_traffic_lab.entity.*;
+import teho.high_traffic_lab.kafka.KafkaProducer;
 import teho.high_traffic_lab.repository.BulkRepository;
 import teho.high_traffic_lab.repository.CategoryRepository;
-import teho.high_traffic_lab.repository.ItemRepository;
-import teho.high_traffic_lab.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,8 +31,8 @@ public class CommonService {
     private static int USER_SIZE = 0;
     private static int ORDER_SIZE = 0;
     private final int BATCH_SIZE = 500000;
-    private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
+    private final KafkaProducer kafkaProducer;
+    private final OrderService orderService;
     private final BulkRepository bulkRepository;
     private final CategoryRepository categoryRepository;
     @PersistenceContext
@@ -45,6 +48,22 @@ public class CommonService {
         initPayment();
 
         System.out.println("초기화 완료~!");
+
+        for (int i = 1; i <= ORDER_SIZE; i++) {
+            kafkaProducer.send("insert-order-info-to-mongo", convertToJson(orderService.getOrderDetailByOrderId((long) i)));
+        }
+        System.out.println("카프카 send 까지 완료!!");
+    }
+
+    private String convertToJson(OrderDetailResponse request) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            System.out.println("OrderInfo issue send convert 에러 = " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     private void initUser(int userCount) {

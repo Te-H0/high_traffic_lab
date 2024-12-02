@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class OrderInfoDto {
+    private long id;
     private String userName;
     private int level;
     private LocalDateTime orderDate;

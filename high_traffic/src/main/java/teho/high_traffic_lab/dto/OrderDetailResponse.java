@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderDetailResponse {
 
+    private long id;
     private String userName;
     private int level;
     private LocalDateTime orderDate;
@@ -21,6 +22,7 @@ public class OrderDetailResponse {
     private LocalDateTime paymentDate;
 
     public OrderDetailResponse(OrderInfoDto orderInfoDto, List<OrderItemDetail> itemInfoList) {
+        this.id = orderInfoDto.getId();
         this.userName = orderInfoDto.getUserName();
         this.level = orderInfoDto.getLevel();
         this.orderDate = orderInfoDto.getOrderDate();
