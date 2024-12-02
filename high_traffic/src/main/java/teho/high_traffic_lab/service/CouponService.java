@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import teho.high_traffic_lab.dto.CouponIssueRequest;
@@ -13,26 +14,65 @@ import teho.high_traffic_lab.kafka.KafkaProducer;
 import teho.high_traffic_lab.redis.RedisUtil;
 import teho.high_traffic_lab.repository.CouponRepository;
 
+import java.time.Instant;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
 @Service
 @RequiredArgsConstructor
 public class CouponService {
-    private static final Long COUPON_COUNT = 100L;
+    public static final String COUPON_QUEUE_KEY = "COUPON_WAITING_QUEUE";
+    public static final int PROCESS_SIZE = 10;
+    private static final long COUPON_COUNT = 100L;
     private final KafkaProducer kafkaProducer;
     private final RedisUtil redisUtil;
     private final CouponRepository couponRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
-    public long issueCoupon(Long userId) {
-        Long couponCount = redisUtil.decrementValue("COUPON");
+    public long enqueueToWaitingQueue(long userId) {
+
+        long score = Instant.now().toEpochMilli();
+        redisUtil.addToSortedSet(COUPON_QUEUE_KEY, String.valueOf(userId), score);
+
+        return redisUtil.getMyRankFromSortedSet(COUPON_QUEUE_KEY, String.valueOf(userId));
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void processCouponIssue() {
+        Set<String> processUsers = redisUtil.getUsersFromSortedSet(COUPON_QUEUE_KEY, PROCESS_SIZE);
+        if (!processUsers.isEmpty()) {
+            CompletableFuture[] futures = processUsers.stream()
+                    .map(user -> CompletableFuture.runAsync(() -> {
+                        long leftCoupons = issueCoupon(Long.parseLong(user));
+                        if (leftCoupons == -1) {
+                            System.out.println("매진 ㅜㅜ userId: " + Long.parseLong(user));
+                        } else {
+                            System.out.println("userId: " + Long.parseLong(user) + ", " + (COUPON_COUNT - leftCoupons) + "번째 당첨~!");
+                        }
+
+                    }))
+                    .toArray(CompletableFuture[]::new);
+
+            CompletableFuture.allOf(futures).join();
+
+            redisUtil.removeRangeFromSortedSet(COUPON_QUEUE_KEY, 0, processUsers.size() - 1);
+            System.out.println("대기열에 남은 사람!!!!!!! = " + redisUtil.getQueueSize(COUPON_QUEUE_KEY));
+        }
+
+
+    }
+
+    public long issueCoupon(long userId) {
+        long couponCount = redisUtil.decrementValue("COUPON");
         System.out.println("잔여 쿠폰 수 = " + couponCount);
         if (couponCount >= 0) {
-            Long couponId = COUPON_COUNT - couponCount;
+            long couponId = COUPON_COUNT - couponCount;
             CouponIssueRequest request = new CouponIssueRequest(userId, couponId);
 
             kafkaProducer.send("issue-coupon", convertToJson(request));
         } else {
-            throw new RuntimeException("ㅜㅜㅜ쿠폰 재고 소진!!!" + (100 - couponCount) + "번째로 신청하셨습니다.");
+            return -1;
         }
 
 

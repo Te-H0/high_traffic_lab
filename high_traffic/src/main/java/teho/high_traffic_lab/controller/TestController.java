@@ -32,8 +32,14 @@ public class TestController {
         return "성공~";
     }
 
+    @GetMapping("/coupon/enqueue")
+    public String couponWaitingQueue(@RequestParam long userId) {
+        long rank = couponService.enqueueToWaitingQueue(userId);
+        return rank + "번째 순서로 대기 중 입니다~!";
+    }
+
     @GetMapping("/coupon/issue")
-    public String issueCoupon(@RequestParam Long userId) {
+    public String issueCoupon(@RequestParam long userId) {
         long remainingCouponCount = couponService.issueCoupon(userId);
         if (remainingCouponCount < 0) {
             return "ㅜㅜㅜ쿠폰 재고 소진!!!" + (100 - remainingCouponCount) + "번째로 신청하셨습니다.";

@@ -6,10 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CouponIssueRequest {
-    private Long userId;
-    private Long couponId;
+    private long userId;
+    private long couponId;
 
-    public CouponIssueRequest(Long userId, Long couponId) {
+    public CouponIssueRequest(long userId, long couponId) {
         this.userId = userId;
         this.couponId = couponId;
     }
