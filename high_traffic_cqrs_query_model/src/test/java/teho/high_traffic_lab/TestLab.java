@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import teho.high_traffic_lab.entity.User;
+import teho.high_traffic_lab.document.User;
 import teho.high_traffic_lab.repository.UserRepository;
 import teho.high_traffic_lab.service.UserService;
 
