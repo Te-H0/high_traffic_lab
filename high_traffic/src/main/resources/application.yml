@@ -22,6 +22,15 @@ spring:
         show_sql: true
         use_sql_comments: false
       defer-datasource-initialization: true
+      
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:

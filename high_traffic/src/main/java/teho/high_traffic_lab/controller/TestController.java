@@ -50,7 +50,7 @@ public class TestController {
     @GetMapping("/coupon/init")
     public String createCoupon(@RequestParam int size) {
         couponService.initCoupons(size);
-        return size + "개 쿠폰 rdbms에 저장";
+        return size + "개 쿠폰 redis, rdbms에 저장";
     }
 
     @GetMapping("orders/detail")

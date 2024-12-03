@@ -22,8 +22,9 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class CouponService {
     public static final String COUPON_QUEUE_KEY = "COUPON_WAITING_QUEUE";
-    public static final int PROCESS_SIZE = 10;
-    private static final long COUPON_COUNT = 100L;
+    public static final int PROCESS_SIZE = 1000;
+    private static final long COUPON_COUNT = 1000L;
+    private static boolean COUPON_STATE = true;
     private final KafkaProducer kafkaProducer;
     private final RedisUtil redisUtil;
     private final CouponRepository couponRepository;
@@ -42,20 +43,27 @@ public class CouponService {
     public void processCouponIssue() {
         Set<String> processUsers = redisUtil.getUsersFromSortedSet(COUPON_QUEUE_KEY, PROCESS_SIZE);
         if (!processUsers.isEmpty()) {
-            CompletableFuture[] futures = processUsers.stream()
-                    .map(user -> CompletableFuture.runAsync(() -> {
-                        long leftCoupons = issueCoupon(Long.parseLong(user));
-                        if (leftCoupons == -1) {
-                            System.out.println("매진 ㅜㅜ userId: " + Long.parseLong(user));
-                        } else {
-                            System.out.println("userId: " + Long.parseLong(user) + ", " + (COUPON_COUNT - leftCoupons) + "번째 당첨~!");
-                        }
+            if (!COUPON_STATE) {
+                System.out.println("쿠폰 마감 ㅜㅜㅜㅜㅜ");
 
-                    }))
-                    .toArray(CompletableFuture[]::new);
+            } else {
+                CompletableFuture[] futures = processUsers.stream()
+                        .map(user -> CompletableFuture.runAsync(() -> {
+                            if (!COUPON_STATE) {
+                                return;
+                            }
+                            long leftCoupons = issueCoupon(Long.parseLong(user));
+                            if (leftCoupons == -1) {
+                                COUPON_STATE = false;
+                                System.out.println("매진 ㅜㅜ userId: " + Long.parseLong(user));
+                            } else {
+                                System.out.println("userId: " + Long.parseLong(user) + ", " + (COUPON_COUNT - leftCoupons) + "번째 당첨~!");
+                            }
 
-            CompletableFuture.allOf(futures).join();
-
+                        }))
+                        .toArray(CompletableFuture[]::new);
+                CompletableFuture.allOf(futures).join();
+            }
             redisUtil.removeRangeFromSortedSet(COUPON_QUEUE_KEY, 0, processUsers.size() - 1);
             System.out.println("대기열에 남은 사람!!!!!!! = " + redisUtil.getQueueSize(COUPON_QUEUE_KEY));
         }

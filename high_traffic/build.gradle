@@ -39,6 +39,10 @@ dependencies {
     // jackson
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1'
 
+    // 메트릭 모니터링
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
 }
 
 tasks.named('test') {
