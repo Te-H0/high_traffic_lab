@@ -53,7 +53,7 @@ Before
 <div align = center>↓</div>
 
 After
-![cqrs](https://github.com/user-attachments/assets/ad0f6eb0-b31e-4fa2-8cb2-866646b140f5)
+![cqrs](https://github.com/user-attachments/assets/708f3887-debf-432e-8f4e-ad2166590cc5)
 
 ## 🤔 해결 과정
 
